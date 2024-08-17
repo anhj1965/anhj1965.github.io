@@ -1,22 +1,206 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>现场作业手册</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <!-- 设置浏览器图标 -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <!-- 默认主题 -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+
+
 </head>
 <body>
-  <div id="app"></div>
+  <!-- 定义加载时候的动作 -->
+  <div id="app">小二努力加载中...</div>
   <script>
+
     window.$docsify = {
-      name: '',
-      repo: ''
+      name: '现场作业手册',  // 项目名称
+      repo: '', // 仓库地址，点击右上角的Github章鱼猫头像会跳转到此地址
+      loadSidebar: true,  // 加载侧边栏 
+      maxLevel: 5,        // 最大支持渲染的标题层级
+      subMaxLevel:3,      // 自定义侧边栏后默认不会再生成目录，设置生成目录的最大层级（建议配置为2-4）
+      mergeNavbar: false,  // 小屏设备下合并导航栏到侧边栏
+      loadNavbar: false,  // 加载导航栏
+      coverpage: true,    // 封面支持，默认加载的是项目根目录下的_coverpage.md文件
+      onlyCover: true,
+      // 搜索相关设置
+      search: {
+            maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+            noData: '找不到结果',//搜索不到结果时显示
+            paths: 'auto',//注意：仅适用于 paths: 'auto' 模式
+            placeholder: '搜索',//搜索框提示
+            noData: '找不到结果',
+            hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
+        },
+      // 底部导航
+      pagination: {
+            previousText: "上一页",
+            nextText: "下一页",
+            crossChapter: true,
+            crossChapterText: true,
+        },
+      // 字数统计
+      count:{
+            countable:true,
+            fontsize:'0.9em',
+            color:'rgb(90,90,90)',
+            language:'chinese'
+        },
+    
+      // 显示文档更新日期
+      timeUpdater:{
+        text:"<div align='right' width='100%' style='color:gray;font-size:16px;margin-top:10px;'>最后更新时间：{docsify-updated}</div>",
+        formatUpdated: "{YYYY}-{MM}-{DD} {HH}:{mm}",
+      },
+
+      //进度条美化
+      progress:{
+        position:"top",
+        color:"var(--theme-color,#42b983)",
+        height:"3px",
+      },
+
+      //回到顶部
+      docsifyBackTop:{
+        size:32,  //组件大小
+        bottom:15,  //组件底部偏移距离
+        right:15,   //组件右侧偏移距离
+        logo:'top',  //字符串活SVG矢量图代码，默认为svg代码图标
+        bgColor:'#42b983' //背景颜色，logo为svg图标时，不填。
+      },
+         
+      //
+      markdown: {
+        renderer:{
+          code: function(code, lang){
+            	if(lang=='drawio') {
+                if(window.drawioConverter){
+                  console.log('drawio转化中')
+                  return window.drawioConverter(code)
+                }else{
+                  return `<div class='drawio-code'>$(code)</div>`
+                }
+              } 
+              else if(lang==='pdf'){
+                  var pdf_renderer = function(code, lang, verify) {
+                      function unique_id_generator(){
+                        function rand_gen(){
+                          return Math.floor((Math.random()+1) * 65536).toString(16).substring(1);
+                        }
+                        return rand_gen() + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + rand_gen() + rand_gen();
+                      }
+                      if(lang && !lang.localeCompare('pdf', 'en', {sensitivity: 'base'})){
+                        if(verify){
+                          return true;
+                        }else{
+                          var divId = "markdown_code_pdf_container_" + unique_id_generator().toString();
+                          var container_list = new Array();
+                          if(localStorage.getItem('pdf_container_list')){
+                            container_list = JSON.parse(localStorage.getItem('pdf_container_list'));	
+                          }
+                          container_list.push({"pdf_location": code, "div_id": divId});
+                          localStorage.setItem('pdf_container_list', JSON.stringify(container_list));
+                          return (
+                            '<div style="margin-top:'+ PDF_MARGIN_TOP +'; margin-bottom:'+ PDF_MARGIN_BOTTOM +';" id="'+ divId +'">'
+                              + '<a href="'+ code + '"> Link </a> to ' + code +
+                            '</div>'
+                          );
+			                } 
+		              }
+		              return false;
+                }
+                if(pdf_renderer(code, lang, true)){
+                    return pdf_renderer(code, lang, false);
+                }
+              }
+              else{
+                return this.origin.code.apply(this,arguments);
+              }
+          }
+        }
+      },
+  
     }
   </script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processClass: 'math',
+      processEscapes: true
+    },
+    TeX: {
+    equationNumbers: { autoNumber: ['AMS'], useLabelIds: true },
+    extensions: ['extpfeil.js', 'mediawiki-texvc.js'],
+    Macros: {bm: "\\boldsymbol"}
+    },
+    'preview-HTML': { linebreaks: { automatic: true } },
+    SVG: { linebreaks: { automatic: true } }
+    });
+  </script>
+
+
   <!-- Docsify v4 -->
+  <!-- docsify@4.js与docsify.min.js二选一，其中docsify@4.js离线似乎不好用 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- 搜索功能支持 -->
+  <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
+  <!-- 字数统计 -->
+  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+  <!-- 侧边栏目录折叠 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <!-- 代码复制 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+  <!-- 底部 上一页下一页 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/external-script.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/ga.min.js"></script>
+  <!-- 图片放大缩小支持 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <!--在所有的代码块上添加一个简单的Click to copy按钮来允许用户从你的文档中轻易地复制代码-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <!-- 移除GitHub链接 -->
+  <script>
+    window.onload = function() {
+      // 移除GitHub链接
+      var githubLink = document.querySelector('.github-corner');
+      if (githubLink) {
+        githubLink.remove();
+      }
+    }
+  </script>
+  <!-- 最近更新记录 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-updated/src/time-updater.min.js"></script>
+  <!-- 进度条美化-->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist.progress.min.js"></script>
+  <!-- PDFObject.js is a required dependency of this plugin -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script> 
+  <!-- This is the source code of the pdf embed plugin -->
+  <script src="path-to-file/docsify-pdf-embed.js"></script>
+  <!-- or use this if you are not hosting the file yourself -->
+  <script src="//unpkg.com/docsify-pdf-embed-plugin/src/docsify-pdf-embed.js"></script>
+  <!-- 插入公式 -->
+
+  <script src="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <script src="//cdn.jsdelivr.net/npm/marked@4"></script>
+
+  <!-- CDN files for docsify-katex -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
+  <!-- or <script src="//cdn.jsdelivr.net/gh/upupming/docsify-katex@latest/dist/docsify-katex.js"></script> -->
+  <!-- 回到顶部 -->
+  <script src="https://cdn.jsdelivr.net/gh/Sumsung524/docsify-backTop/dist/docsify-backTop.min.js"></script>
+  <!-- dispays Carbon Ads -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-plugin-carbon@1/index.min.js"></script>
+  <!-- 百度统计 -->
+  <script src="https://unpkg.com/docsify-baidu-tj@1.0.2/dist/docsify-baidu-tj.min.js"></script>
 </body>
 </html>
