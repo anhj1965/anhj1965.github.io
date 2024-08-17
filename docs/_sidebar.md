@@ -153,7 +153,7 @@
 	* [保护装置](/quick-disposal-of-fault-points/保护装置/)
 	* [测试仪器](/quick-disposal-of-fault-points/测试仪器/)
 
-* 西北电网常用继电保护调试方法
+* 常用继电保护调试方法
 	* [线路保护](/device-debugging-method/线路保护/)
 	* [远跳装置](/device-debugging-method/远跳装置/)
 	* [纵差线路保护对调](/device-debugging-method/纵差线路保护对调/)
